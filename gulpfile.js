@@ -72,6 +72,30 @@ if (typeof window === 'object') { window.Blockly = Blockly; }\n`))
       .pipe(gulp.dest(''));
 });
 
+gulp.task('blockly_java_en', function() {
+  var srcs = [
+    'blockly_compressed.js',
+    'blocks_compressed.js',
+    'java_compressed.js',
+    'msg/js/en.js'
+  ];
+  // Concatenate the sources, appending the module export at the bottom.
+  // Override textToDomDocument, providing Node alternative to DOMParser.
+  return gulp.src(srcs)
+      .pipe(gulp.concat('blockly_node_javascript_en.js'))
+      .pipe(insert.append(`
+if (typeof DOMParser !== 'function') {
+  var JSDOM = require('jsdom').JSDOM;
+  Blockly.Xml.utils.textToDomDocument = function(text) {
+    var jsdom = new JSDOM(text, { contentType: 'text/xml' });
+    return jsdom.window.document;
+  };
+}
+if (typeof module === 'object') { module.exports = Blockly; }
+if (typeof window === 'object') { window.Blockly = Blockly; }\n`))
+      .pipe(gulp.dest(''));
+});
+
 /**
  * Task-builder for the watch function. Currently any change invokes the whole
  * build script. Invoke with "gulp watch".
@@ -103,8 +127,8 @@ function buildWatchTaskFn(concatTask) {
 
 // Watch Blockly files for changes and trigger automatic rebuilds, including
 // the Node-ready blockly_node_javascript_en.js file.
-gulp.task('watch', buildWatchTaskFn('blockly_javascript_en'));
+gulp.task('watch', buildWatchTaskFn('blockly_java_en'));
 
 // The default task concatenates files for Node.js, using English language
 // blocks and the JavaScript generator.
-gulp.task('default', ['build', 'blockly_javascript_en']);
+gulp.task('default', ['build', 'blockly_java_en']);
