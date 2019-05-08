@@ -5,8 +5,19 @@ var CodeHelper = {
     return 'public void '+ funcName +'(){\n'+ statements +'\n};\n';
   },
   getFunctionInvocationCode: function(block, valueInputName, funcName){
-    funcName = funcName || valueInputName;
-    var value = Blockly.JavaScript.valueToCode(block, valueInputName, Blockly.JavaScript.ORDER_ATOMIC);
+    var value = '';
+    var values = [];
+    if (Array.isArray(valueInputName)){
+      valueInputName.forEach(function(aValueName){
+        values.push(Blockly.JavaScript.valueToCode(block, aValueName, Blockly.JavaScript.ORDER_ATOMIC));
+      });
+      value = values.join(',');
+    }
+    else {
+
+      value = Blockly.JavaScript.valueToCode(block, valueInputName, Blockly.JavaScript.ORDER_ATOMIC);
+      funcName = funcName || valueInputName;
+    }
     return code =  funcName +'(' + value + ');\n';
   },
   getSimpleFunctionInvocationCode: function(block, funcName){
@@ -163,24 +174,14 @@ var CodeHelper = {
   
   
   Blockly.JavaScript['fn_setcolors'] = function(block) {
-    var value_bodycolor = Blockly.JavaScript.valueToCode(block, 'bodyColor', Blockly.JavaScript.ORDER_ATOMIC);
-    var value_guncolor = Blockly.JavaScript.valueToCode(block, 'gunColor', Blockly.JavaScript.ORDER_ATOMIC);
-    var value_radarcolor = Blockly.JavaScript.valueToCode(block, 'radarColor', Blockly.JavaScript.ORDER_ATOMIC);
-    // TODO: Assemble JavaScript into code variable.
-    var code = '...;\n';
-    return code;
+    return CodeHelper.getFunctionInvocationCode(block, ['bodyColor','gunColor', 'radarColor'], 'setColors');
   };
   
   Blockly.JavaScript['fn_turngunright'] = function(block) {
-    var value_degrees = Blockly.JavaScript.valueToCode(block, 'degrees', Blockly.JavaScript.ORDER_ATOMIC);
-    // TODO: Assemble JavaScript into code variable.
-    var code = '...;\n';
-    return code;
+    return CodeHelper.getFunctionInvocationCode(block, 'degrees', 'turnGunRight');
   };
   
   Blockly.JavaScript['fn_turngunleft'] = function(block) {
-    var value_degrees = Blockly.JavaScript.valueToCode(block, 'degrees', Blockly.JavaScript.ORDER_ATOMIC);
-    // TODO: Assemble JavaScript into code variable.
-    var code = '...;\n';
-    return code;
+    return CodeHelper.getFunctionInvocationCode(block, 'degrees', 'turnGunLeft');
+
   };
