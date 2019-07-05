@@ -3,7 +3,6 @@ function _separateFunctions(){
     // func1(){  func1a(){}      func1b(){}            }
 }
 /* 
- s s
 
 //transformar este código java
 
